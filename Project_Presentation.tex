@@ -1,0 +1,230 @@
+\documentclass{beamer}
+\usepackage{listings}
+\lstset{
+%language=C,
+frame=single, 
+breaklines=true,
+columns=fullflexible
+}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{commath}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage{tkz-fct}
+\usepackage{mathrsfs}
+\usepackage{txfonts}
+\usepackage{tkz-euclide} 
+\usetikzlibrary{calc,math}
+\usepackage{float}
+\providecommand{\brak}[1]{\ensuremath{\left(#1\right)}}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\providecommand{\pr}[1]{\ensuremath{\Pr\left(#1\right)}}
+\usepackage[export]{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usetheme{Boadilla}
+\title{Numerically Efficient Fourier-Based Technique for Calculating Error Probabilities with Intersymbol Reference}
+\subtitle{}
+\author{Vamsi Preetham(CS20BTECH11058)}
+\institute{Indian Institute of Technology Hyderbad}
+\date{26-6-2021}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Introduction}
+Here we propose a numerically efficient technique for calculating of the probability the symbol error for arbitary coherent modulation schemes in the presence of Intersymbol Reference and additive noise.
+\end{frame}
+
+\begin{frame}
+\frametitle{Abbreviations and Notations}
+\begin{description}
+\item[ISI - Intersymbol Interference]
+\item[CAD - Computer-Aided Design]
+\item[M-PSK - M-ary Phase-Shift Keying]
+\item[M-QAM - M-ary Quadrature Amplitude Modulation]
+\item[QPSK - Quadrature Phase Shift Keying]
+\item[BPSK - Binary Phase Shift Keying]
+\end{description}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Outline}
+\begin{itemize}
+\item The effects of Intersymbol Interference(ISI) can degrade the probability of error performance of the receivers.
+\item For determining the performance of the receiver $P_e$ is evaluated over a particular sequence of ISI symbols and then averaged.
+\item But this technique is computationally expensive so cosiderable work is done for more efficient techniques.
+\item Here we present a method that can be applied to 1 and 2-D coherent signaling formats.
+\item The probability of correctly decoding a particular symbol is the inverse Fourier transform of the windowed characteristic function.
+\item Sampling theorem , truncation and Appropriate spectral windowing are used for numerical evaluation of the integral.
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Problem Statement and General Solution}
+\begin{block}{Receiver Output}
+ Sample solution of a coherent receiver $y$ in the presence of ISI and noise
+    \begin{align}
+     y =  \sum_{{k=-N}_{k\not\equiv0}}^{N} b_ka_k + b_0a_0 +n 
+    \end{align} 
+    where
+\begin{itemize}
+    \item $b_k$'s represent the transmitted data sequence in which each symbol is one of the M-possible equally probable symbols.
+    \item $a_k$'s are ISI coefficients.
+    \item $b_0$ current symbol to be detected.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{}
+    \begin{block}{Probability of correct decision}
+     The probability of making a correct decision when $j^{th}$ element $s_j$ is sent is 
+     where
+     \begin{align}
+         P_{cj} = \pr{y\in D_j | b_0 = s_j}
+     \end{align}
+     \begin{itemize}
+         \item $D_j$ is the decision region in the complex plane corresponding to $s_j$. 
+     \end{itemize}
+     The probability of the error is 
+     \begin{align}
+         P_E = 1 - \frac{1}{M}\sum_{j=1}^{M} P-{c_{j}}.
+     \end{align}
+   Here $y$ is written in terms of in-phase and quadrature components as $y=y_I+iy_Q$ , $h_Y(\omega_I,\omega_Q)$ is it's bivariate characteristic notation,
+    \begin{align}
+        h_Y(\omega_I,\omega_Q)=h_{ISI}(\omega_I,\omega_Q)h_N(\omega_I,\omega_Q)e^{i(\omega_IRe{s_ja_0}+\omega_Q{Ims_ja_0})}
+    \end{align}
+    \end{block}
+\end{frame}
+
+\begin{frame}{}
+\begin{block}{Probability Density Function}
+ The Probability density function of $y$ is given by
+ \begin{align}
+     f_Y(y_I,y_Q) = \frac{1}{(2\pi)^2}\int_{-\infty}^{\infty}\int_{-\infty}^{\infty} h_Y(\omega_I,\omega_Q)e^{-i(\omega_iy _I+\omega_Qy_Q)}\,d\omega_I \,d\omega_Q
+     \end{align}
+As,
+    \begin{align}
+        P_{cj}=\int_{}^{}\int{D_j}^{}f_Y(y_I,y_Q)\,dy_i \,dy_Q
+    \end{align}
+We combine $(5)$ and $(6)$ to
+\begin{align}
+P_{c_j}=\frac{1}{2\pi}\int_{-\infty}^{\infty}\int_{-\infty}^{\infty}K_j(\omega_I,\omega_Q)h_{ISI}(\omega_I,\omega_Q)h_N(\omega_I,\omega_Q)e^{i(\omega_IRe\{s_ja_0\}+\omega_QIm\{s_ja_o\})}\\ d\omega_Id\omega_Q    
+\end{align}
+\end{block}
+\end{frame}
+\begin{frame}{}
+    \begin{block}{Fourier Equation}
+     Here $K_j(\omega_I,\omega_Q)$ is called the Fourier form and the equation is called the Inverse Fourier Transformation.
+     \begin{itemize}
+         \item The probability and the spectral domains are equivalently stated with the relations
+     \end{itemize}
+     \begin{align}
+        P_j(t_I,t_Q)=F^{-1}\{k_j(\omega_I,\omega_Q)h_{ISI}(\omega_I,\omega_Q)h_N(\omega_I,\omega_Q)\} 
+     \end{align}
+     Or equivalently
+     \begin{align}
+        P_j(t_I,t_Q)=D_j(t_I,t_Q)f_ISI(t_I,t_Q)f_N(t_I,t_Q)
+     \end{align}
+     \begin{itemize}
+         \item  Where $f_{ISI}$ and $f_{N}$ are the probability density functions of the random variables representing ISI and Noise.
+         \item Sampling theorem and Equations(8) and (9) are used to compute the Fourier Integrals.
+     \end{itemize}
+    \end{block}
+\end{frame}
+\begin{frame}{}
+    \begin{block}{Poisson's Sum}
+      With rectangular grid of Spectral Resolution $\delta w_I=\delta w_Q = \frac{2\pi}{T}$, the Poisson's sum is
+      \begin{align}
+          \sum_{m_Q=-\infty}^{\infty}\sum_{m_Q=-\infty}^{\infty}P_j(t_I-m_IT,t_Q-m_QT)=\frac{1}{T^2}\sum_{t_Q=-\infty}^{\infty}\sum_{t_Q=-\infty}^{\infty}K_j(\frac{2\pi}{T}l_I,\frac{2\pi}{T}l_Q)\\.h_{ISI}(\frac{2\pi}{T}l_I,\frac{2\pi}{T}l_Q).h_N(\frac{2\pi}{T}l_I,\frac{2\pi}{T}l_Q).e^{i(l_It_I+l_Qt_Q)\frac{2\pi}{T}}
+      \end{align}
+      But $eq-(11)$ is not defined in some regions because the decision region $D_f$ can be of infinite duration in the $(t_I,t_Q)$n plane in infinite $P_j$. To correct this decision region is modified with a ideal brick-wall window.
+    \end{block}
+\end{frame}
+\begin{frame}{}
+    \begin{block}{Corrected Probability}
+    After truncation the calculated probability of correctly detecting the $j^{th}$ symbol is  \begin{align}
+        \vec{P_{cj}}=\frac{1}{T^2}\sum_{t_Q=-P}^{P}\sum_{t_Q=-P}^{P}\vec{K_j}\prod_{k=-N}^{k=N}h_{ISIk}(\omegal_I,\omega_Q).h_N(\omegal_I,\omegal_Q)e^{i(\omegal_IRe\{s_ja_0\}+\omegal_QIm\{s_ja_o\})}\\d\omega_Id\omega_Q 
+    \end{align}
+    ANd $P_c_j=\vec{P_c_j}$+error(error=$\epsilon_1-\epslion_2+\epsilon_3)$\\
+    The first component $\epsilon_1$ is the result of the modified design region and can be written as 
+    \begin{align}
+        \epsilon_1=(D_j(t_I,t_Q)-\vec(D_J)(t_I,t_Q))*f_{ISI}(t_I,t_Q)*f_N(t_I,t_Q)
+    \end{align}
+evaluated at $t_I=a_{0I}-a_{0Q}$ and $t_Q=a_{0I}+a_{0Q}$ 
+\end{block}
+\end{frame}
+
+\begin{frame}{}
+    \begin{block}{errors}
+    The second component $\epsilon_2$ is due to aliasing and is determined by applying $\vec{D_j}$ to eq(9) and using eq(10) as,
+     \begin{align}
+     \epsilon_2=\sum{}{} \sum{}{} \vec{P_j}(t_I-m_IT,t_Q-m_QT)
+     \end{align}
+     Finally $\epsilon_3$ is due to spectral truncation 
+     \begin{align}
+         |{\epsilon_3}|<\frac{1}{T^2}|{\vec{k_j}(\omega l_I,\omega l_Q)}||{h_{ISI}(\omega l_I,\omega l_Q)}||{h_N(\omega l_I,\omega l_Q)}|
+     \end{align}
+     Note that error should be much lesser than $P_{cj}$
+    \end{block}
+\end{frame}
+\begin{frame}{Error Probability for QPSK}
+\begin{block}{QPSK}
+    The characteristic function of the $k^{th}$ interfernce component where $b_k$'s represent intake and quadratic components $(b_k=\pm1\pm i)$ is given by
+    \begin{align}
+        h_{ISIk}(\omega_I,\omega_Q)=cos(\omega_Ia_{kI}+\omega_Qa_{kQ})cos(\omega_Ia_{kQ}-\omega_Qa_{kI})
+    \end{align}
+    For noise both inphase and quadratic components are independent and identically distributed
+    \begin{align}
+        h_N(\omega_I,\omega_Q)=e^{-\frac{(\omega_I^2+\omega_Q^2)\sigma^2}{2}}
+    \end{align}
+    The fourier transformation is
+    \begin{align}
+        \vec(K_{1})(\omega_I,\omega_Q)=\frac{T^2}{4}sinc\frac{\omega_IT}{4\pi}sinc{\omega_QT}{4\pi}e^{-i(\omega_I+\omega_Q)\frac{t}{4}}    
+    \end{align}
+    where sinc(x)=\frac{sin\pi*x}{\pi*x}    
+\end{block}
+\end{frame}
+
+\begin{frame}{}
+    \begin{block}{parameters}
+        $\epsilon$ is a user-specified parameter where $\gamma$ and $\phi$ and P the spectral truncation function are 
+        \begin{align}
+            \epsilon=\phi(\frac{\frac{-T}{2}+\gamma}{\sigma})\\
+            \gamma=\sum_{K=-N}^{N}(|a_{kI}|+a_{kQ}|)\\
+            \phi=(\sqrt{2\pi})^{\frac{-1}{2}}\sum_{-\infty}^{x}e^{\frac{-y^2}{2}dy}\\
+            P=\ceil(\frac{LT}{2\pi\sigme})
+        \end{align}
+   The total numerical error is 
+        \begin{align}
+            |error|<30\epsilon
+        \end{align}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \begin{block}
+    The probability of error is $P_E=1-P_{C1}$. The probability of error for QPSK is
+    \begin{align}
+        \vec{P_E}=1-\frac{1}{4}\sum_{l_Q=_P}^{P}\sum_{l_Q=_P}^{P}sinc\frac{l_I}{2}sinc\frac{l_Q}{2}\prod_{k=-N}{N}h_{ISIk}(\omega l_I,\omega_Q).h_N(\omega l_I,\omega l_Q)\\.cos(\omega l_I(a_{0I}-a_{0Q}-\frac{T}{4})+\omega l_Q(a_{0I}+a_{0Q}-\frac{T}{4}
+    \end{align}. The probability of bit error for BPSK is $P_B=1-\sqrt{1-P_E}$.
+    Table 1 contains the calculated probability probability for symbol error for r=0(induces crosstalk between in-phase and quadrature channels) and for various values of N and table 2 is for r=0.25.\\\\
+    This is a simple numerically efficient techniques for calculating probability of error with ISI and additive noise.
+    \end{block}
+\end{frame}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=\columnwidth]{WhatsApp Image 2021-07-01 at 16.41.22.jpeg}
+    \caption{Table 1 and 2 $P_E$ vs r curve}
+    \label{fig:galaxy}
+\end{figure}
+
+\end{document}
+
